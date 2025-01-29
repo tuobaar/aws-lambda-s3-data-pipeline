@@ -41,7 +41,7 @@ def fetch_data_with_retry(api_url):
     )
     session.mount("https://", HTTPAdapter(max_retries=retries))
 
-    response = None  # Initialize
+    response = None  # Initialize response variable
 
     try:
         logging.info("📡 Fetching data from API...")
