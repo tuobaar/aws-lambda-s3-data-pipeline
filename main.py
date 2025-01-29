@@ -7,6 +7,8 @@ import pandas as pd  # For data processing and manipulation
 import boto3  # AWS SDK for interacting with S3
 from botocore.exceptions import BotoCoreError, ClientError  # Handle AWS S3-specific errors
 from io import StringIO  # For handling in-memory text streams (e.g., saving processed data)
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # Configure logging
 logging.basicConfig(
@@ -20,29 +22,51 @@ logging.basicConfig(
 # ----------------------------
 # Step 1: Fetch Data from API
 # ----------------------------
-def fetch_data(api_url):
+def fetch_data_with_retry(api_url):
     """
-    Fetches data from a specified API endpoint.
+    Fetches data from a specified API endpoint with retry logic.
 
     Args:
         api_url (str): The URL of the API to fetch data from.
 
     Returns:
-        list: A list of dictionaries containing the data from the API, or None if an error occurs.
+        list or None: A list of dictionaries containing the data from the API, or None if an error occurs.
     """
+    session = requests.Session()
+    retries = Retry(
+        total=3,
+        backoff_factor=2,  # Exponential backoff (2s, 4s, 8s)
+        status_forcelist=[500, 502, 503, 504],
+        allowed_methods=["GET"]  # Only retry GET requests
+    )
+    session.mount("https://", HTTPAdapter(max_retries=retries))
+
+    response = None  # Initialize
+
     try:
-        response = requests.get(api_url)
-        response.raise_for_status()
-        logging.info("✅ Data fetched successfully from API!")
-        return response.json()
+        logging.info("📡 Fetching data from API...")
+        response = session.get(api_url, timeout=10)
+        response.raise_for_status()  # Raise exception for 4xx/5xx responses
+        logging.info(f"✅ Data fetched successfully! Status Code: {response.status_code}")
+
+        # Validate response is JSON
+        try:
+            return response.json()
+        except ValueError:
+            logging.error("❌ API response is not valid JSON. Returning None.")
+            return None
+
     except requests.exceptions.ConnectionError:
-        logging.error("❌ Failed to connect to the API. Check your network connection or API URL/Endpoint.")
+        logging.error("❌ Network error! Could not connect to the API. Check the API URL and internet connection.")
+    except requests.exceptions.Timeout:
+        logging.error("⏳ Request timed out! The API took too long to respond.")
     except requests.exceptions.HTTPError as e:
-        logging.error(f"❌ HTTP error occurred: {e}")
+        logging.error(f"❌ HTTP error {response.status_code}: {response.text}")
     except requests.exceptions.RequestException as e:
-        logging.error(f"❌ Failed to fetch data from API: {e}")
+        logging.error(f"❌ Request failed: {e}")
     except Exception as e:
-        logging.error(f"❌ An unexpected error occurred while fetching data: {e}")
+        logging.error(f"❌ Unexpected error occurred: {e}")
+
     return None
 
 
@@ -176,7 +200,7 @@ def lambda_handler(event, context):
         }
 
     # Step 1: Fetch the data
-    raw_data = fetch_data(api_url)
+    raw_data = fetch_data_with_retry(api_url)
     if not raw_data:
         error_message = "❌ Data pipeline failed at the Fetch Data stage."
         logging.error(error_message)
