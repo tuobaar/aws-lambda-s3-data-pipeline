@@ -4,7 +4,7 @@ import time  # For adding delays between retries during S3 uploads
 import logging  # For logging pipeline progress and errors
 import requests  # For making API requests
 import pandas as pd  # For data processing and manipulation
-import boto3  # AWS SDK for interacting with S3
+import boto3  # AWS SDK for interacting with S3 and other AWS services.
 from botocore.exceptions import BotoCoreError, ClientError  # Handle AWS S3-specific errors
 from io import StringIO  # For handling in-memory text streams (e.g., saving processed data)
 from requests.adapters import HTTPAdapter
