@@ -313,7 +313,7 @@ You need to attach a policy to the IAM role that explicitly allows the sns:Publi
 
 2. Update the IAM Role Policy
    - Open the IAM Console: https://console.aws.amazon.com/iam/.
-   - Go to Roles and search for aws-s3-data-pipeline-docker-role-rm1h3y7m.
+   - Go to Roles and search for aws-s3-data-pipeline-docker-role.
    - Select the role and go to the Permissions tab.
    - Click Add permissions → Create inline policy.
    - Choose the JSON editor and paste the following policy:
