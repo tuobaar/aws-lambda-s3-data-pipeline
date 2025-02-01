@@ -49,12 +49,23 @@ For more information, see the [AWS Documentation](https://aws.amazon.com/documen
 
 For more information, refer to the [Docker Documentation](https://docs.docker.com/).
 
+Despite the above prerequisite skills, this readme is quite exhaustive.
+
 ---
 
 ## **Requirements**
 - Python 3.9 or 3.11
 - Pandas, Requests, Boto3
 - AWS CLI (configured with credentials)
+
+---
+
+## **Fetch Project Files**
+1. Clone the repository (or download ZIP):
+    ```bash
+    git clone https://github.com/tuobaar/aws-lambda-s3-data-pipeline
+    ```
+2. Continue the rest of the steps in the AWS cloud environment.
 
 ---
 
@@ -84,6 +95,7 @@ aws-cli/2.x.x Python/3.x.x Linux/x86_64
 ```
 
 ### **Step 2: Configure AWS CLI**
+You should already have your security credentials. Otherwise, go to Identity and Access Management (IAM) and generate your Access Key and Secret Access Key. 
 ```bash
 aws configure
 ```
@@ -104,7 +116,8 @@ C:\Users\YOUR_USER\.aws\credentials (Windows)
 ```bash
 aws s3 ls
 ```
-If configured correctly, this will list your S3 buckets.
+- If configured correctly, this will list your S3 buckets.
+- For more details, see the [AWS CLI Documentation](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).
 
 ---
 
