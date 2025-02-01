@@ -41,8 +41,6 @@ def fetch_data_with_retry(api_url):
     )
     session.mount("https://", HTTPAdapter(max_retries=retries))
 
-    response = None  # Initialize response variable
-
     try:
         logging.info("📡 Fetching data from API...")
         response = session.get(api_url, timeout=10)
@@ -61,7 +59,10 @@ def fetch_data_with_retry(api_url):
     except requests.exceptions.Timeout:
         logging.error("⏳ Request timed out! The API took too long to respond.")
     except requests.exceptions.HTTPError as e:
-        logging.error(f"❌ HTTP error {response.status_code}: {response.text}")
+        if e.response is not None:  # Ensure response exists
+            logging.error(f"❌ HTTP error {e.response.status_code}: {e.response.text}")
+        else:
+            logging.error(f"❌ HTTP error occurred: {e}")
     except requests.exceptions.RequestException as e:
         logging.error(f"❌ Request failed: {e}")
     except Exception as e:
