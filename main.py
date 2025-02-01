@@ -192,6 +192,7 @@ def lambda_handler(event, context):
     s3_bucket = os.getenv("S3_BUCKET")
     s3_key = os.getenv("S3_KEY")
 
+    # Validate required environment variables
     env_vars = validate_environment_vars(["API_URL", "S3_BUCKET", "S3_KEY", "SNS_TOPIC_ARN"])
     if not env_vars:
         notify_failure("❌ Missing required environment variables.")
