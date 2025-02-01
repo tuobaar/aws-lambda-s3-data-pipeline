@@ -205,7 +205,7 @@ AWS Lambda is the core of this pipeline, where the Python script will execute on
    Since your lambda_handler function is in main.py, the handler should be specified as:
       ```plaintext
       main.lambda_handler
-     
+      ```
    ##### **How to Update the Lambda Handler**:
    - Open the AWS Lambda Console.
    - Navigate to your Lambda function.
